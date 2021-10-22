@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc_kullanimi1/helpers/shared_fontsize.dart';
 part 'fontsize_event.dart';
 part 'fontsize_state.dart';
 
@@ -15,6 +16,9 @@ class FontSizeBloc extends Bloc<FontSizeEvent, FontSizeState> {
   }
 
   void changeFontSize(double gelenFontSize) {
+    FontSizeShared().saveFontSizeSharedPref(gelenFontSize);
+    // ignore: avoid_print
+    print("değiş");
     add(
       FontSizeEvent(fontSize: gelenFontSize),
     );

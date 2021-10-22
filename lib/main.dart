@@ -4,10 +4,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_kullanimi1/bloc/cart_bloc.dart';
 import 'package:flutter_bloc_kullanimi1/bloc/fontsize_bloc.dart';
 import 'package:flutter_bloc_kullanimi1/bloc/theme_bloc.dart';
+import 'package:flutter_bloc_kullanimi1/helpers/shared_fontsize.dart';
 import 'package:flutter_bloc_kullanimi1/style/text_style.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'helpers/shared_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  bool? isThemeLight;
+  double? isFontSize;
+  await ThemeShared().createThemeSharedPrefObj();
+  await FontSizeShared().createFontSizeSharedPrefObj();
+  isThemeLight = await ThemeShared().loadThemeSharedPref();
+  isFontSize = await FontSizeShared().loadFontSizeSharedPref();
+
   List bosListe = [];
+
   runApp(
     MultiBlocProvider(
       providers: [
@@ -18,12 +30,12 @@ void main() {
         ),
         BlocProvider<FontSizeBloc>(
           create: (BuildContext context) => FontSizeBloc(
-            FontSizeState(17),
+            FontSizeState(isFontSize ?? 17),
           ),
         ),
         BlocProvider<ThemeBloc>(
           create: (BuildContext context) => ThemeBloc(
-            ThemeState(true),
+            ThemeState(isThemeLight ?? true),
           ),
         ),
       ],
@@ -40,6 +52,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    SharedPreferences.getInstance();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(
@@ -209,7 +228,7 @@ class _SettingsPageScreenState extends State<SettingsPageScreen> {
       body: Center(
         child: Column(
           children: [
-            ElevatedButton(
+            /* ElevatedButton(
               onPressed: () {
                 BlocProvider.of<ThemeBloc>(context).changeTheme(
                     Theme.of(context).brightness == Brightness.light
@@ -217,6 +236,22 @@ class _SettingsPageScreenState extends State<SettingsPageScreen> {
                         : true);
               },
               child: simpleText(context, "Temayı Değiştir"),
+            ),*/
+            BlocBuilder<ThemeBloc, ThemeState>(
+              bloc: BlocProvider.of<ThemeBloc>(context),
+              builder: (context, ThemeState state) {
+                return SwitchListTile(
+                  title: state.isLight
+                      ? const Text("Tema: Açık")
+                      : const Text("Tema: Kapalı"),
+                  onChanged: (val) {
+                    // ignore: avoid_print
+                    print("val: $val");
+                    BlocProvider.of<ThemeBloc>(context).changeTheme(val);
+                  },
+                  value: state.isLight,
+                );
+              },
             ),
             const SizedBox(
               height: 20.0,
@@ -224,7 +259,8 @@ class _SettingsPageScreenState extends State<SettingsPageScreen> {
             BlocBuilder<FontSizeBloc, FontSizeState>(
               bloc: BlocProvider.of<FontSizeBloc>(context),
               builder: (context, FontSizeState state) {
-                return simpleText(context, state.fontSize.toString());
+                return simpleText(
+                    context, "Font Size: " + state.fontSize.toString());
               },
             ),
             BlocBuilder<FontSizeBloc, FontSizeState>(
@@ -242,7 +278,10 @@ class _SettingsPageScreenState extends State<SettingsPageScreen> {
                   },
                 );
               },
-            )
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
           ],
         ),
       ),
