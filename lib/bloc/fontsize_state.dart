@@ -1,7 +1,10 @@
 part of 'fontsize_bloc.dart';
 
-class FontSizeState {
+class FontSizeState extends Equatable {
   final double fontSize;
 
-  FontSizeState(this.fontSize);
+  const FontSizeState(this.fontSize);
+
+  @override
+  List<Object?> get props => [fontSize];
 }

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc_kullanimi1/helpers/shared_theme.dart';
 
 part 'theme_event.dart';

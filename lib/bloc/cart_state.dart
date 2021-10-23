@@ -2,8 +2,11 @@ part of 'cart_bloc.dart';
 
 //setState yerine geçen kısım
 
-class CartState {
-  final List eklenenUrunler;
+// ignore: must_be_immutable
+class CartState extends Equatable {
+  final List<dynamic> addedProducts;
+  const CartState(this.addedProducts);
 
-  CartState(this.eklenenUrunler);
+  @override
+  List<Object?> get props => [addedProducts];
 }

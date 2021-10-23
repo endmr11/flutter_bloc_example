@@ -1,7 +1,10 @@
 part of 'theme_bloc.dart';
 
-class ThemeState {
+class ThemeState extends Equatable {
   final bool isLight;
 
-  ThemeState(this.isLight);
+  const ThemeState(this.isLight);
+
+  @override
+  List<Object?> get props => [isLight];
 }

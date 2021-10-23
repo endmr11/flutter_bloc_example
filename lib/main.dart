@@ -13,19 +13,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool? isThemeLight;
   double? isFontSize;
-  await ThemeShared().createThemeSharedPrefObj();
+  final themeShared = ThemeShared();
+  await themeShared.createThemeSharedPrefObj();
   await FontSizeShared().createFontSizeSharedPrefObj();
-  isThemeLight = await ThemeShared().loadThemeSharedPref();
+  isThemeLight = await themeShared.loadThemeSharedPref();
   isFontSize = await FontSizeShared().loadFontSizeSharedPref();
 
-  List bosListe = [];
+  final List<dynamic> emptyList = [];
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider<CartBloc>(
           create: (BuildContext context) => CartBloc(
-            CartState(bosListe),
+            CartState(emptyList),
           ),
         ),
         BlocProvider<FontSizeBloc>(
@@ -112,7 +113,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   animationDuration: const Duration(milliseconds: 300),
                   animationType: BadgeAnimationType.slide,
                   badgeContent: Text(
-                    " ${state.eklenenUrunler.length}",
+                    state.addedProducts.length.toString(),
                     style: const TextStyle(
                       color: Colors.white,
                     ),
@@ -178,9 +179,9 @@ class _CartPageScreenState extends State<CartPageScreen> {
       body: BlocBuilder<CartBloc, CartState>(
         bloc: BlocProvider.of<CartBloc>(context),
         builder: (context, CartState state) {
-          return state.eklenenUrunler.isNotEmpty
+          return state.addedProducts.isNotEmpty
               ? ListView.builder(
-                  itemCount: state.eklenenUrunler.length,
+                  itemCount: state.addedProducts.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -188,7 +189,7 @@ class _CartPageScreenState extends State<CartPageScreen> {
                         color: Colors.blue,
                         child: ListTile(
                           title: Text(
-                            state.eklenenUrunler[index],
+                            state.addedProducts[index],
                           ),
                           trailing: IconButton(
                             onPressed: () {},
